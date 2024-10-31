@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualização de Usuários</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>Visualização de Usuários</h1>
+
+    <form action="/search" method="POST">
+        <input type="text" name="searchQuery" placeholder="Buscar por nome..." required>
+        <button type="submit">Buscar</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>CPF</th>
+                <th>Nome</th>
+                <th>RG</th>
+                <th>Email</th>
+                <th>Telefone</th>
+                <th>Endereço</th>
+                <th>Data de Nascimento</th>
+                <th>Data de Criação</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% usuarios.forEach(usuario => { %>
+                <tr>
+                    <td><%= usuario.cpf %></td>
+                    <td><%= usuario.nome %></td>
+                    <td><%= usuario.rg %></td>
+                    <td><%= usuario.email %></td>
+                    <td><%= usuario.telefone %></td>
+                    <td><%= usuario.endereco.rua + ", " + usuario.endereco.numero + ", " + usuario.endereco.cidade + ", " + usuario.endereco.estado + ", " + usuario.endereco.cep %></td>
+                    <td><%= usuario.data_nascimento.toISOString().split('T')[0] %></td>
+                    <td><%= usuario.data_criacao.toISOString().split('T')[0] %></td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+</body>
+</html>
