@@ -4,13 +4,11 @@ const bodyParser = require('body-parser');
 const app = express();
 const port = 3000;
 
-// Conectar ao MongoDB com tratamento de erro
+// Conectar ao MongoDB
 mongoose.connect('mongodb://localhost:27017/Challenge', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-})
-.then(() => console.log('Conectado ao MongoDB'))
-.catch(err => console.error('Erro ao conectar ao MongoDB:', err));
+});
 
 // Definir o esquema e modelo para o Usuario
 const usuarioSchema = new mongoose.Schema({
@@ -28,7 +26,7 @@ const usuarioSchema = new mongoose.Schema({
     cep: String,
   },
   data_nascimento: Date,
-  data_criacao: { type: Date, default: Date.now },
+  data_criacao: Date,
 });
 
 const Usuario = mongoose.model('Usuario', usuarioSchema);
@@ -40,107 +38,85 @@ app.use(express.static('public'));
 
 // Rota para visualizar todos os usuários
 app.get('/', async (req, res) => {
-  try {
-    const usuarios = await Usuario.find({});
-    res.render('index', { usuarios });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Erro ao buscar usuários');
-  }
+  const usuarios = await Usuario.find({});
+  res.render('index', { usuarios });
 });
 
 // Rota para buscar usuários
 app.post('/search', async (req, res) => {
-  try {
-    const { searchQuery } = req.body;
-    const usuarios = await Usuario.find({ nome: { $regex: searchQuery, $options: 'i' } });
-    res.render('index', { usuarios });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Erro ao buscar usuários');
-  }
+  const { searchQuery } = req.body;
+  const usuarios = await Usuario.find({ nome: { $regex: searchQuery, $options: 'i' } });
+  res.render('index', { usuarios });
 });
 
 // Rota para adicionar um novo usuário
 app.post('/add', async (req, res) => {
+  const { cpf, nome, rg, senha, email, telefone, rua, numero, cidade, estado, cep, data_nascimento } = req.body;
+  const novoUsuario = new Usuario({
+    cpf,
+    nome,
+    rg,
+    senha,
+    email,
+    telefone,
+    endereco: { rua, numero, cidade, estado, cep },
+    data_nascimento,
+    data_criacao: new Date(),
+  });
+
   try {
-    const { cpf, nome, rg, senha, email, telefone, rua, numero, cidade, estado, cep, data_nascimento } = req.body;
-    const usuario = new Usuario({
-      cpf,
-      nome,
-      rg,
-      senha,
-      email,
-      telefone,
-      endereco: { rua, numero, cidade, estado, cep },
-      data_nascimento: new Date(data_nascimento),
-    });
-    await usuario.save();
-    res.redirect('/');
+    await novoUsuario.save();
+    res.redirect('/'); // Redireciona para a página inicial após adicionar o usuário
   } catch (err) {
-    console.error(err);
-    res.status(500).send('Erro ao adicionar usuário');
+    console.error('Erro ao adicionar usuário:', err);
+    res.redirect('/?message=Erro ao adicionar usuário'); // Redireciona com uma mensagem de erro
   }
 });
 
-// Rota para editar um usuário
+// Rota para mostrar o formulário de edição
 app.get('/edit/:id', async (req, res) => {
-  try {
-    const usuario = await Usuario.findById(req.params.id);
-    if (!usuario) {
-      return res.status(404).send('Usuário não encontrado');
-    }
-    res.render('edit', { usuario });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Erro ao buscar usuário para edição');
+  const usuario = await Usuario.findById(req.params.id);
+  if (!usuario) {
+    return res.status(404).send('Usuário não encontrado');
   }
+  res.render('edit', { usuario });
 });
 
-// Rota para atualizar um usuário
-app.post('/update/:id', async (req, res) => {
+// Rota para atualizar o usuário
+app.post('/edit/:id', async (req, res) => {
+  const { cpf, nome, rg, senha, email, telefone, rua, numero, cidade, estado, cep, data_nascimento } = req.body;
+  const updates = {
+    cpf,
+    nome,
+    rg,
+    email,
+    telefone,
+    endereco: { rua, numero, cidade, estado, cep },
+    data_nascimento,
+  };
+
+  if (senha) {
+    updates.senha = senha; // Atualiza a senha apenas se foi fornecida
+  }
+
   try {
-    const { cpf, nome, rg, senha, email, telefone, rua, numero, cidade, estado, cep, data_nascimento } = req.body;
-    const usuario = await Usuario.findByIdAndUpdate(req.params.id, {
-      cpf,
-      nome,
-      rg,
-      senha,
-      email,
-      telefone,
-      endereco: { rua, numero, cidade, estado, cep },
-      data_nascimento: new Date(data_nascimento),
-    }, { new: true });
-    
-    if (!usuario) {
-      return res.status(404).send('Usuário não encontrado');
-    }
-    
-    res.redirect('/');
+    await Usuario.findByIdAndUpdate(req.params.id, updates);
+    res.redirect('/'); // Redireciona para a página inicial após editar o usuário
   } catch (err) {
-    console.error(err);
-    res.status(500).send('Erro ao atualizar usuário');
+    console.error('Erro ao atualizar usuário:', err);
+    res.redirect('/?message=Erro ao atualizar usuário'); // Redireciona com uma mensagem de erro
   }
 });
 
 // Rota para excluir um usuário
 app.post('/delete/:id', async (req, res) => {
   try {
-    const usuario = await Usuario.findByIdAndDelete(req.params.id);
-    if (!usuario) {
-      return res.status(404).send('Usuário não encontrado');
-    }
-    res.redirect('/');
+    await Usuario.findByIdAndDelete(req.params.id);
+    res.redirect('/'); // Redireciona para a página inicial após excluir o usuário
   } catch (err) {
-    console.error(err);
-    res.status(500).send('Erro ao excluir usuário');
+    console.error('Erro ao excluir usuário:', err);
+    res.redirect('/?message=Erro ao excluir usuário'); // Redireciona com uma mensagem de erro
   }
-});
-
-// Middleware para tratamento de erros
-app.use((err, req, res, next) => {
-  console.error(err);
-  res.status(500).send('Algo deu errado!');
 });
 
 // Iniciar o servidor

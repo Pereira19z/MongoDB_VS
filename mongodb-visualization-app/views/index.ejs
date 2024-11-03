@@ -5,10 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Visualização de Usuários</title>
     <style>
-        body { font-family: Arial, sans-serif; }
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; }
+        h1, h2 { color: #333; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 8px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
         th { background-color: #f2f2f2; }
+        button { 
+            padding: 5px 10px; 
+            background-color: #4CAF50; 
+            color: white; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+        }
+        button:hover { background-color: #45a049; }
+        .form-container { margin-top: 20px; }
+        input[type="text"], input[type="email"], input[type="password"], input[type="number"], input[type="date"] {
+            width: 100%; 
+            padding: 10px; 
+            margin: 5px 0; 
+            border: 1px solid #ccc; 
+            border-radius: 5px;
+        }
+        input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus, input[type="number"]:focus, input[type="date"]:focus {
+            border-color: #4CAF50; 
+            outline: none;
+        }
     </style>
 </head>
 <body>
@@ -18,6 +40,25 @@
         <input type="text" name="searchQuery" placeholder="Buscar por nome..." required>
         <button type="submit">Buscar</button>
     </form>
+
+    <div class="form-container">
+        <h2>Adicionar Novo Usuário</h2>
+        <form action="/add" method="POST">
+            <input type="text" name="cpf" required placeholder="CPF" pattern="\d{11}" title="Insira um CPF válido com 11 dígitos">
+            <input type="text" name="nome" required placeholder="Nome">
+            <input type="text" name="rg" required placeholder="RG">
+            <input type="password" name="senha" required placeholder="Senha" minlength="6" title="A senha deve ter pelo menos 6 caracteres">
+            <input type="email" name="email" required placeholder="Email">
+            <input type="text" name="telefone" required placeholder="Telefone" pattern="\d{10,11}" title="Insira um telefone válido com 10 ou 11 dígitos">
+            <input type="text" name="rua" required placeholder="Rua">
+            <input type="number" name="numero" required placeholder="Número">
+            <input type="text" name="cidade" required placeholder="Cidade">
+            <input type="text" name="estado" required placeholder="Estado">
+            <input type="text" name="cep" required placeholder="CEP" pattern="\d{5}-\d{3}" title="Insira um CEP válido no formato 00000-000">
+            <input type="date" name="data_nascimento" required placeholder="Data de Nascimento">
+            <button type="submit">Adicionar</button>
+        </form>
+    </div>
 
     <table>
         <thead>
@@ -30,6 +71,7 @@
                 <th>Endereço</th>
                 <th>Data de Nascimento</th>
                 <th>Data de Criação</th>
+                <th>Ações</th>
             </tr>
         </thead>
         <tbody>
@@ -40,9 +82,19 @@
                     <td><%= usuario.rg %></td>
                     <td><%= usuario.email %></td>
                     <td><%= usuario.telefone %></td>
-                    <td><%= usuario.endereco.rua + ", " + usuario.endereco.numero + ", " + usuario.endereco.cidade + ", " + usuario.endereco.estado + ", " + usuario.endereco.cep %></td>
-                    <td><%= usuario.data_nascimento.toISOString().split('T')[0] %></td>
-                    <td><%= usuario.data_criacao.toISOString().split('T')[0] %></td>
+                    <td>
+                        <%= usuario.endereco.rua + ", " + usuario.endereco.numero + ", " + usuario.endereco.cidade + ", " + usuario.endereco.estado + ", " + usuario.endereco.cep %>
+                    </td>
+                    <td><%= new Date(usuario.data_nascimento).toLocaleDateString('pt-BR') %></td>
+                    <td><%= new Date(usuario.data_criacao).toLocaleDateString('pt-BR') %></td>
+                    <td>
+                        <form action="/delete/<%= usuario._id %>" method="POST" style="display:inline;">
+                            <button type="submit">Excluir</button>
+                        </form>
+                        <form action="/edit/<%= usuario._id %>" method="GET" style="display:inline;">
+                            <button type="submit">Editar</button>
+                        </form>
+                    </td>
                 </tr>
             <% }); %>
         </tbody>
