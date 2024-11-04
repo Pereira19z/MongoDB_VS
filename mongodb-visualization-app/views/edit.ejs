@@ -11,7 +11,7 @@
             width: 100%; 
             padding: 10px; 
             margin: 5px 0; 
-            border: 1px solid #ccc;
+            border: 1px solid #ccc; 
             border-radius: 5px;
         }
         button {
@@ -29,18 +29,30 @@
     <h1>Editar Usuário</h1>
 
     <form action="/edit/<%= usuario._id %>" method="POST">
+        <input type="text" name="usuario" value="<%= usuario.usuario %>" required placeholder="Usuário">
+        <input type="text" name="id_usuario" value="<%= usuario.id_usuario %>" required placeholder="ID Usuário">
         <input type="text" name="cpf" value="<%= usuario.cpf %>" required placeholder="CPF" pattern="\d{11}" title="Insira um CPF válido com 11 dígitos">
         <input type="text" name="nome" value="<%= usuario.nome %>" required placeholder="Nome">
         <input type="text" name="rg" value="<%= usuario.rg %>" required placeholder="RG">
         <input type="password" name="senha" placeholder="Senha (deixe em branco para não alterar)">
-        <input type="email" name="email" value="<%= usuario.email %>" required placeholder="Email">
-        <input type="text" name="telefone" value="<%= usuario.telefone %>" required placeholder="Telefone" pattern="\d{10,11}" title="Insira um telefone válido com 10 ou 11 dígitos">
-        <input type="text" name="rua" value="<%= usuario.endereco.rua %>" required placeholder="Rua">
-        <input type="number" name="numero" value="<%= usuario.endereco.numero %>" required placeholder="Número">
-        <input type="text" name="cidade" value="<%= usuario.endereco.cidade %>" required placeholder="Cidade">
-        <input type="text" name="estado" value="<%= usuario.endereco.estado %>" required placeholder="Estado">
-        <input type="text" name="cep" value="<%= usuario.endereco.cep %>" required placeholder="CEP" pattern="\d{5}-\d{3}" title="Insira um CEP válido no formato 00000-000">
-        <input type="date" name="data_nascimento" value="<%= new Date(usuario.data_nascimento).toISOString().split('T')[0] %>" required>
+        
+        <h3>Cadastro</h3>
+        <input type="text" name="servico_site" value="<%= usuario.cadastro.servico_site %>" required placeholder="Serviço do Site">
+        <input type="email" name="email_site" value="<%= usuario.cadastro.email_site %>" required placeholder="Email do Site">
+        <input type="text" name="telefone_site" value="<%= usuario.cadastro.telefone_site %>" required placeholder="Telefone do Site" pattern="\d{10,11}" title="Insira um telefone válido com 10 ou 11 dígitos">
+        
+        <h3>Problema</h3>
+        <input type="text" name="nome_site_problema" value="<%= usuario.problema.nome_site %>" required placeholder="Nome do Site (Problema)">
+        <input type="text" name="problema" value="<%= usuario.problema.problema %>" required placeholder="Descrição do Problema">
+        <input type="text" name="dificuldade" value="<%= usuario.problema.dificuldade %>" required placeholder="Dificuldade">
+        
+        <h3>Feedback</h3>
+        <input type="text" name="nome_site_feedback" value="<%= usuario.feedback.nome_site %>" required placeholder="Nome do Site (Feedback)">
+        <input type="text" name="melhorias" value="<%= usuario.feedback.melhorias %>" placeholder="Sugestões de Melhorias">
+        <input type="number" name="nt_funcionamento" value="<%= usuario.feedback.nt_funcionamento %>" required placeholder="Nota de Funcionamento (0 a 10)" min="0" max="10">
+        <input type="number" name="nt_facilidade" value="<%= usuario.feedback.nt_facilidade %>" required placeholder="Nota de Facilidade (0 a 10)" min="0" max="10">
+        <input type="number" name="nt_dificuldade" value="<%= usuario.feedback.nt_dificuldade %>" required placeholder="Nota de Dificuldade (0 a 10)" min="0" max="10">
+
         <button type="submit">Salvar Alterações</button>
     </form>
 

@@ -5,99 +5,185 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Visualização de Usuários</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; }
-        h1, h2 { color: #333; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-        th { background-color: #f2f2f2; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 20px; 
+            background-color: #e9ecef; 
+            color: #343a40; 
+        }
+        h1, h2, h3 { 
+            color: #007bff; 
+            text-align: center; 
+        }
+        .form-container, .usuario-card {
+            background: white; 
+            border: 1px solid #ddd; 
+            border-radius: 8px; 
+            padding: 20px; 
+            margin: 10px 0; 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: 0.3s;
+        }
+        .form-container:hover, .usuario-card:hover {
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+        .usuario-card h4 { 
+            margin: 10px 0; 
+            color: #495057; 
+        }
         button { 
-            padding: 5px 10px; 
-            background-color: #4CAF50; 
+            padding: 10px 15px; 
+            background-color: #007bff; 
             color: white; 
             border: none; 
             border-radius: 5px; 
             cursor: pointer; 
+            transition: background-color 0.3s, transform 0.2s;
         }
-        button:hover { background-color: #45a049; }
-        .form-container { margin-top: 20px; }
-        input[type="text"], input[type="email"], input[type="password"], input[type="number"], input[type="date"] {
+        button:hover { 
+            background-color: #0056b3; 
+            transform: translateY(-2px); 
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        .form-container input[type="text"], 
+        .form-container input[type="email"], 
+        .form-container input[type="password"], 
+        .form-container input[type="number"], 
+        .form-container input[type="date"] {
             width: 100%; 
-            padding: 10px; 
-            margin: 5px 0; 
-            border: 1px solid #ccc; 
-            border-radius: 5px;
+            padding: 12px; 
+            margin: 8px 0; 
+            border: 1px solid #007bff; 
+            border-radius: 5px; 
+            box-sizing: border-box; 
+            transition: border-color 0.3s;
         }
-        input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus, input[type="number"]:focus, input[type="date"]:focus {
-            border-color: #4CAF50; 
+        .form-container input[type="text"]:focus, 
+        .form-container input[type="email"]:focus, 
+        .form-container input[type="password"]:focus, 
+        .form-container input[type="number"]:focus, 
+        .form-container input[type="date"]:focus {
+            border-color: #0056b3; 
             outline: none;
         }
+        @media (max-width: 600px) {
+            .form-container, .usuario-card {
+                padding: 15px;
+            }
+            button {
+                width: 100%;
+                padding: 12px;
+            }
+        }
+        .message {
+            display: none; /* Oculta inicialmente */
+            padding: 10px;
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
     </style>
+    <script>
+        function showFeedbackMessage() {
+            const messageElement = document.getElementById('feedback-message');
+            messageElement.style.display = 'block'; // Mostra a mensagem
+            setTimeout(() => {
+                messageElement.style.display = 'none'; // Oculta a mensagem após 3 segundos
+            }, 3000);
+        }
+    </script>
 </head>
 <body>
-    <h1>Visualização de Usuários</h1>
+    <h1>Formulário Feedback de Clientes</h1>
 
-    <form action="/search" method="POST">
-        <input type="text" name="searchQuery" placeholder="Buscar por nome..." required>
-        <button type="submit">Buscar</button>
-    </form>
+    <div class="message" id="feedback-message">Feedback adicionado com sucesso!</div>
 
+    <!-- Formulário para adicionar novo usuário -->
     <div class="form-container">
         <h2>Adicionar Novo Usuário</h2>
-        <form action="/add" method="POST">
+        <form action="/add" method="POST" onsubmit="showFeedbackMessage();">
+            <input type="text" name="usuario" required placeholder="Usuário">
+            <input type="text" name="id_usuario" required placeholder="ID Usuário">
             <input type="text" name="cpf" required placeholder="CPF" pattern="\d{11}" title="Insira um CPF válido com 11 dígitos">
             <input type="text" name="nome" required placeholder="Nome">
             <input type="text" name="rg" required placeholder="RG">
             <input type="password" name="senha" required placeholder="Senha" minlength="6" title="A senha deve ter pelo menos 6 caracteres">
-            <input type="email" name="email" required placeholder="Email">
-            <input type="text" name="telefone" required placeholder="Telefone" pattern="\d{10,11}" title="Insira um telefone válido com 10 ou 11 dígitos">
-            <input type="text" name="rua" required placeholder="Rua">
-            <input type="number" name="numero" required placeholder="Número">
-            <input type="text" name="cidade" required placeholder="Cidade">
-            <input type="text" name="estado" required placeholder="Estado">
-            <input type="text" name="cep" required placeholder="CEP" pattern="\d{5}-\d{3}" title="Insira um CEP válido no formato 00000-000">
-            <input type="date" name="data_nascimento" required placeholder="Data de Nascimento">
+            
+            <!-- Cadastro Section -->
+            <h3>Cadastro</h3>
+            <input type="text" name="servico_site" required placeholder="Serviço do Site">
+            <input type="email" name="email_site" required placeholder="Email do Site">
+            <input type="text" name="telefone_site" required placeholder="Telefone do Site" pattern="\d{10,11}">
+
+            <!-- Problema Section -->
+            <h3>Problema</h3>
+            <input type="text" name="nome_site_problema" required placeholder="Nome do Site (Problema)">
+            <input type="text" name="problema" required placeholder="Descrição do Problema">
+            <input type="text" name="dificuldade" required placeholder="Dificuldade">
+            
+            <!-- Feedback Section -->
+            <h3>Feedback</h3>
+            <input type="text" name="nome_site_feedback" required placeholder="Nome do Site (Feedback)">
+            <input type="text" name="melhorias" placeholder="Sugestões de Melhorias">
+            <input type="number" name="nt_funcionamento" required placeholder="Nota de Funcionamento (0 a 10)" min="0" max="10">
+            <input type="number" name="nt_facilidade" required placeholder="Nota de Facilidade (0 a 10)" min="0" max="10">
+            <input type="number" name="nt_dificuldade" required placeholder="Nota de Dificuldade (0 a 10)" min="0" max="10">
+            
             <button type="submit">Adicionar</button>
         </form>
     </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>CPF</th>
-                <th>Nome</th>
-                <th>RG</th>
-                <th>Email</th>
-                <th>Telefone</th>
-                <th>Endereço</th>
-                <th>Data de Nascimento</th>
-                <th>Data de Criação</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% usuarios.forEach(usuario => { %>
-                <tr>
-                    <td><%= usuario.cpf %></td>
-                    <td><%= usuario.nome %></td>
-                    <td><%= usuario.rg %></td>
-                    <td><%= usuario.email %></td>
-                    <td><%= usuario.telefone %></td>
-                    <td>
-                        <%= usuario.endereco.rua + ", " + usuario.endereco.numero + ", " + usuario.endereco.cidade + ", " + usuario.endereco.estado + ", " + usuario.endereco.cep %>
-                    </td>
-                    <td><%= new Date(usuario.data_nascimento).toLocaleDateString('pt-BR') %></td>
-                    <td><%= new Date(usuario.data_criacao).toLocaleDateString('pt-BR') %></td>
-                    <td>
-                        <form action="/delete/<%= usuario._id %>" method="POST" style="display:inline;">
-                            <button type="submit">Excluir</button>
-                        </form>
-                        <form action="/edit/<%= usuario._id %>" method="GET" style="display:inline;">
-                            <button type="submit">Editar</button>
-                        </form>
-                    </td>
-                </tr>
-            <% }); %>
-        </tbody>
-    </table>
+    <h3>Visualização de Usuários</h3>
+    <!-- Seção de busca -->
+    <form action="/search" method="POST" style="margin-bottom: 20px;">
+        <input type="text" name="searchQuery" placeholder="Buscar por nome..." required>
+        <button type="submit">Buscar</button>
+    </form>
+
+    <!-- Tabela de Usuários -->
+    <div>
+        <% usuarios.forEach(usuario => { %>
+            <div class="usuario-card">
+                <h4>Informações do Usuário</h4>
+                <p><strong>ID Usuário:</strong> <%= usuario.id_usuario %></p>
+                <p><strong>Nome:</strong> <%= usuario.nome %></p>
+                <p><strong>CPF:</strong> <%= usuario.cpf %></p>
+                <p><strong>RG:</strong> <%= usuario.rg %></p>
+                <p><strong>Usuário:</strong> <%= usuario.usuario %></p>
+                <p><strong>Senha:</strong> ****** (oculta)</p>
+
+                <h4>Cadastro</h4>
+                <p><strong>Serviço do Site:</strong> <%= usuario.cadastro.servico_site %></p>
+                <p><strong>Email do Site:</strong> <%= usuario.cadastro.email_site %></p>
+                <p><strong>Telefone do Site:</strong> <%= usuario.cadastro.telefone_site %></p>
+
+                <h4>Problema</h4>
+                <p><strong>Nome do Site (Problema):</strong> <%= usuario.problema.nome_site %></p>
+                <p><strong>Descrição do Problema:</strong> <%= usuario.problema.problema %></p>
+                <p><strong>Dificuldade:</strong> <%= usuario.problema.dificuldade %></p>
+
+                <h4>Feedback</h4>
+                <p><strong>Nome do Site (Feedback):</strong> <%= usuario.feedback.nome_site %></p>
+                <p><strong>Melhorias:</strong> <%= usuario.feedback.melhorias %></p>
+                <p><strong>Nota de Funcionamento:</strong> <%= usuario.feedback.nt_funcionamento %></p>
+                <p><strong>Nota de Facilidade:</strong> <%= usuario.feedback.nt_facilidade %></p>
+                <p><strong>Nota de Dificuldade:</strong> <%= usuario.feedback.nt_dificuldade %></p>
+
+                <!-- Ações -->
+                <div>
+                    <form action="/delete/<%= usuario._id %>" method="POST" style="display:inline;">
+                        <button type="submit">Excluir</button>
+                    </form>
+                    <form action="/edit/<%= usuario._id %>" method="GET" style="display:inline;">
+                        <button type="submit">Editar</button>
+                    </form>
+                </div>
+            </div>
+        <% }); %>
+    </div>
 </body>
 </html>

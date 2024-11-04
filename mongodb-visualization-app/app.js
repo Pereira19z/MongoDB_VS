@@ -12,21 +12,32 @@ mongoose.connect('mongodb://localhost:27017/Challenge', {
 
 // Definir o esquema e modelo para o Usuario
 const usuarioSchema = new mongoose.Schema({
+  usuario: String,
+  id_usuario: String,
   cpf: String,
   nome: String,
   rg: String,
   senha: String,
-  email: String,
-  telefone: String,
-  endereco: {
-    rua: String,
-    numero: Number,
-    cidade: String,
-    estado: String,
-    cep: String,
+
+  cadastro: {
+    servico_site: String,
+    email_site: String,
+    telefone_site: String,
   },
-  data_nascimento: Date,
-  data_criacao: Date,
+
+  problema: {
+    nome_site: String,
+    problema: String,
+    dificuldade: String,
+  },
+
+  feedback: {
+    nome_site: String,
+    melhorias: String,
+    nt_funcionamento: Number,
+    nt_facilidade: Number,
+    nt_dificuldade: Number,
+  },
 });
 
 const Usuario = mongoose.model('Usuario', usuarioSchema);
@@ -51,25 +62,58 @@ app.post('/search', async (req, res) => {
 
 // Rota para adicionar um novo usuário
 app.post('/add', async (req, res) => {
-  const { cpf, nome, rg, senha, email, telefone, rua, numero, cidade, estado, cep, data_nascimento } = req.body;
-  const novoUsuario = new Usuario({
+  const {
+    usuario,
+    id_usuario,
     cpf,
     nome,
     rg,
     senha,
-    email,
-    telefone,
-    endereco: { rua, numero, cidade, estado, cep },
-    data_nascimento,
-    data_criacao: new Date(),
+    servico_site,
+    email_site,
+    telefone_site,
+    nome_site_problema,
+    problema,
+    dificuldade,
+    nome_site_feedback,
+    melhorias,
+    nt_funcionamento,
+    nt_facilidade,
+    nt_dificuldade,
+  } = req.body;
+
+  const novoUsuario = new Usuario({
+    usuario,
+    id_usuario,
+    cpf,
+    nome,
+    rg,
+    senha,
+    cadastro: {
+      servico_site,
+      email_site,
+      telefone_site,
+    },
+    problema: {
+      nome_site: nome_site_problema,
+      problema,
+      dificuldade,
+    },
+    feedback: {
+      nome_site: nome_site_feedback,
+      melhorias,
+      nt_funcionamento: parseInt(nt_funcionamento),
+      nt_facilidade: parseInt(nt_facilidade),
+      nt_dificuldade: parseInt(nt_dificuldade),
+    },
   });
 
   try {
     await novoUsuario.save();
-    res.redirect('/'); // Redireciona para a página inicial após adicionar o usuário
+    res.redirect('/');
   } catch (err) {
     console.error('Erro ao adicionar usuário:', err);
-    res.redirect('/?message=Erro ao adicionar usuário'); // Redireciona com uma mensagem de erro
+    res.redirect('/?message=Erro ao adicionar usuário');
   }
 });
 
@@ -84,27 +128,61 @@ app.get('/edit/:id', async (req, res) => {
 
 // Rota para atualizar o usuário
 app.post('/edit/:id', async (req, res) => {
-  const { cpf, nome, rg, senha, email, telefone, rua, numero, cidade, estado, cep, data_nascimento } = req.body;
-  const updates = {
+  const {
+    usuario,
+    id_usuario,
     cpf,
     nome,
     rg,
-    email,
-    telefone,
-    endereco: { rua, numero, cidade, estado, cep },
-    data_nascimento,
+    senha,
+    servico_site,
+    email_site,
+    telefone_site,
+    nome_site_problema,
+    problema,
+    dificuldade,
+    nome_site_feedback,
+    melhorias,
+    nt_funcionamento,
+    nt_facilidade,
+    nt_dificuldade,
+  } = req.body;
+
+  const updates = {
+    usuario,
+    id_usuario,
+    cpf,
+    nome,
+    rg,
+    cadastro: {
+      servico_site,
+      email_site,
+      telefone_site,
+    },
+    problema: {
+      nome_site: nome_site_problema,
+      problema,
+      dificuldade,
+    },
+    feedback: {
+      nome_site: nome_site_feedback,
+      melhorias,
+      nt_funcionamento: parseInt(nt_funcionamento),
+      nt_facilidade: parseInt(nt_facilidade),
+      nt_dificuldade: parseInt(nt_dificuldade),
+    },
   };
 
   if (senha) {
-    updates.senha = senha; // Atualiza a senha apenas se foi fornecida
+    updates.senha = senha;
   }
 
   try {
     await Usuario.findByIdAndUpdate(req.params.id, updates);
-    res.redirect('/'); // Redireciona para a página inicial após editar o usuário
+    res.redirect('/');
   } catch (err) {
     console.error('Erro ao atualizar usuário:', err);
-    res.redirect('/?message=Erro ao atualizar usuário'); // Redireciona com uma mensagem de erro
+    res.redirect('/?message=Erro ao atualizar usuário');
   }
 });
 
@@ -112,10 +190,10 @@ app.post('/edit/:id', async (req, res) => {
 app.post('/delete/:id', async (req, res) => {
   try {
     await Usuario.findByIdAndDelete(req.params.id);
-    res.redirect('/'); // Redireciona para a página inicial após excluir o usuário
+    res.redirect('/');
   } catch (err) {
     console.error('Erro ao excluir usuário:', err);
-    res.redirect('/?message=Erro ao excluir usuário'); // Redireciona com uma mensagem de erro
+    res.redirect('/?message=Erro ao excluir usuário');
   }
 });
 
